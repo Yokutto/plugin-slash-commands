@@ -17,6 +17,7 @@ dist/
 !src/**/*.d.ts
 **/*.tsbuildinfo
 !jest.config.ts
+!register-*
 
 # Ignore heapsnapshot and log files
 *.heapsnapshot

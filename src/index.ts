@@ -1,3 +1,10 @@
-export const main = () => 'this builds and pushes';
+// Import extensions
+import './lib/structures/extensions/SlashCommandPreconditionContainerExtensions';
 
-export default main;
+// Export all symbols
+export * from './lib/utils/Symbols';
+// Export events
+export * from './lib/utils/Events';
+// Export all structures
+export * from './lib/structures/SlashCommandBuilder';
+export * from './lib/structures/extensions/SlashCommandPreconditionStore';

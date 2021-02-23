@@ -1,56 +1,107 @@
 <div align="center">
 
-![Sapphire Logo](https://cdn.skyra.pw/gh-assets/sapphire.png)
+<!-- ![Sapphire Logo](https://cdn.skyra.pw/gh-assets/sapphire.png) -->
 
-# @sapphire/template
+# @vladfrangu/plugin-slash-commands
 
-**Template for Sapphire Repositories.**
+**Simple plugin for adding Slash Command support in your existing bot.**
 
-[![GitHub](https://img.shields.io/github/license/sapphire-project/template)](https://github.com/sapphire-project/template/blob/main/LICENSE.md)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/sapphire-project/template.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sapphire-project/template/alerts/)
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/sapphire-project/template.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sapphire-project/template/context:javascript)
-[![Coverage Status](https://coveralls.io/repos/github/sapphire-project/template/badge.svg?branch=main)](https://coveralls.io/github/sapphire-project/template?branch=main)
-[![npm](https://img.shields.io/npm/v/@sapphire/template?color=crimson&logo=npm&style=flat-square)](https://www.npmjs.com/package/@sapphire/template)
-[![Depfu](https://badges.depfu.com/badges/template/count.svg)](https://depfu.com/github/sapphire-project/template?project_id=template)
+[![GitHub](https://img.shields.io/github/license/vladfrangu/plugin-slash-commands)](https://github.com/vladfrangu/plugin-slash-commands/blob/main/LICENSE.md)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/vladfrangu/plugin-slash-commands.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/vladfrangu/plugin-slash-commands/alerts/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/vladfrangu/plugin-slash-commands.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/vladfrangu/plugin-slash-commands/context:javascript)
+[![Coverage Status](https://coveralls.io/repos/github/vladfrangu/plugin-slash-commands/badge.svg?branch=main)](https://coveralls.io/github/vladfrangu/plugin-slash-commands?branch=main)
+[![npm](https://img.shields.io/npm/v/@vladfrangu/plugin-slash-commands?color=crimson&logo=npm&style=flat-square)](https://www.npmjs.com/package/@vladfrangu/plugin-slash-commands)
+[![Depfu](https://badges.depfu.com/badges/plugin-slash-commands/count.svg)](https://depfu.com/github/vladfrangu/plugin-slash-commands?project_id=plugin-slash-commands)
 
 </div>
 
-# Steps after creating a repo with this template
-
-1. Find and replace all instances of `template` with the proper word / ID / etc
-2. Ensure the primary branch is called `main`
-3. Ensure branch protection is on
-4. Disable `Packages` from being included in the repository homepage
-5. Enable LGTM for the repository
-6. Enable Depfu for the repository
-7. Enable Coveralls for the repository
-8. Remove this section from the README
-
 ## Features
 
--   This
--   Needs
--   Some
--   More
--   Filling
--   In
+-   Create slash commands with ease
+-   Implement slash command support in your existing code base
+-   Support for the [discord.js](https://discord.js.org/#/docs/main/stable/general/welcome) library
+-   _Other things Vlad just doesn't know what/why to list cuz this is literally the basic jist_
+
+## Installation
+
+```bash
+yarn add -D @vladfrangu/plugin-slash-commands
+```
+
+## Usage
+
+_First, register the plugin_
+
+> Note that at this time, we only support discord.js directly! You may use the classes directly if you want to.
+
+```typescript
+import '@vladfrangu/plugin-slash-commands/register-discordjs';
+```
+
+_Usage with TypeScript_
+
+```typescript
+import {
+	SlashCommandBuilderFunction,
+	SlashCommandBuilder,
+	SlashCommandRunFunction,
+	SlashCommandInteraction,
+	SlashCommandArgs
+} from '@vladfrangu/plugin-slash-commands';
+import { Args, Command } from '@sapphire/framework';
+import type { Message } from 'discord.js';
+
+export class UserCommand extends Command {
+	public [SlashCommandBuilderFunction]() {
+		return new SlashCommandBuilder().setName(this.name).setDescription('Examples are pretty hard, cut me slack!');
+	}
+
+	public [SlashCommandRunFunction](interaction: SlashCommandInteraction, args: SlashCommandArgs) {
+		return interaction.reply('Hello from slash commands!', { ephemeral: true });
+	}
+
+	public run(message: Message, args: Args) {
+		return message.reply('Hello from normal commands!');
+	}
+}
+```
+
+_Usage with JavaScript_
+
+```javascript
+const { SlashCommandBuilderFunction, SlashCommandBuilder, SlashCommandRunFunction } = require('@vladfrangu/plugin-slash-commands');
+const { Args, Command } = require('@sapphire/framework');
+
+exports.UserCommand = class extends Command {
+	[SlashCommandBuilderFunction]() {
+		return new SlashCommandBuilder().setName(this.name).setDescription('Examples are pretty hard, cut me slack!');
+	}
+
+	[SlashCommandRunFunction](interaction, args) {
+		return interaction.reply('Hello from slash commands!', { ephemeral: true });
+	}
+
+	run(message, args) {
+		return message.reply('Hello from normal commands!');
+	}
+};
+```
 
 ## API Documentation
 
-For the full API documentation please refer to the TypeDoc generated [documentation](https://sapphire-project.github.io/template).
+For the full API documentation please refer to the TypeDoc generated [documentation](https://vladfrangu.github.io/plugin-slash-commands).
 
 ## Buy us some doughnuts
 
 Sapphire Project is and always will be open source, even if we don't get donations. That being said, we know there are amazing people who may still want to donate just to show their appreciation. Thank you very much in advance!
 
-We accept donations through Open Collective, Ko-fi, Paypal, Patreon and GitHub Sponsorships. You can use the buttons below to donate through your method of choice.
+We accept donations through Ko-fi, PayPal, Patreon and GitHub Sponsorships. You can use the buttons below to donate through your method of choice.
 
-|   Donate With   |                                             Address                                              |
-| :-------------: | :----------------------------------------------------------------------------------------------: |
-| Open Collective |                    [Click Here](https://opencollective.com/sapphire-project)                     |
-|      Ko-fi      |                         [Click Here](https://ko-fi.com/sapphireproject)                          |
-|     Patreon     |                      [Click Here](https://www.patreon.com/sapphire_project)                      |
-|     PayPal      | [Click Here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SP738BQTQQYZY) |
+| Donate With |                     Address                      |
+| :---------: | :----------------------------------------------: |
+|    Ko-fi    |   [Click Here](https://ko-fi.com/wolfgalvlad)    |
+|   Patreon   | [Click Here](https://www.patreon.com/vladfrangu) |
+|   PayPal    |    [Click Here](https://paypal.me/franguvlad)    |
 
 ## Contributors ✨
 
