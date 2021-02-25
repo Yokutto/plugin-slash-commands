@@ -46,7 +46,7 @@ PreconditionContainerSingle.prototype.slashCommandRun = function slashCommandRun
 		const slashCommandHandler = Reflect.get(precondition, SlashCommandPreconditionRunFunction) as ISlashCommandPreconditionRunFunction | null;
 
 		if (!slashCommandHandler) {
-			throw new Error(
+			throw new TypeError(
 				`The precondition "${this.name}" does not have a slash command handler! Did you forget to add one via the "SlashCommandPreconditionRunFunction" symbol?`
 			);
 		}
@@ -71,11 +71,7 @@ conditions.set(PreconditionRunCondition.And, {
 		context: PreconditionContext
 	) {
 		for (const child of entries) {
-			const slashCommandHandler = Reflect.get(child, SlashCommandPreconditionRunFunction) as ISlashCommandPreconditionRunFunction | null;
-			// Skip any preconditions without slash command handlers
-			if (!slashCommandHandler) continue;
-
-			const result: Result<unknown, UserError> = await Reflect.apply(slashCommandHandler, child, [interaction, command, context]);
+			const result = await child.slashCommandRun(interaction, command, context);
 			if (isErr(result)) return result;
 		}
 
@@ -87,14 +83,7 @@ conditions.set(PreconditionRunCondition.And, {
 		entries: IPreconditionContainer[],
 		context: PreconditionContext
 	) {
-		const results = await Promise.all(
-			entries.map((entry) => {
-				const slashCommandHandler = Reflect.get(entry, SlashCommandPreconditionRunFunction) as ISlashCommandPreconditionRunFunction | null;
-				return slashCommandHandler
-					? (Reflect.apply(slashCommandHandler, entry, [interaction, command, context]) as Result<unknown, UserError>)
-					: Promise.resolve(ok());
-			})
-		);
+		const results = await Promise.all(entries.map((entry) => entry.slashCommandRun(interaction, command, context)));
 
 		return results.find(isErr) ?? ok();
 	}
@@ -112,11 +101,7 @@ conditions.set(PreconditionRunCondition.Or, {
 	) {
 		let error: Err<UserError> | null = null;
 		for (const child of entries) {
-			const slashCommandHandler = Reflect.get(child, SlashCommandPreconditionRunFunction) as ISlashCommandPreconditionRunFunction | null;
-			// Skip any preconditions without slash command handlers
-			if (!slashCommandHandler) continue;
-
-			const result: Result<unknown, UserError> = await Reflect.apply(slashCommandHandler, child, [interaction, command, context]);
+			const result = await child.slashCommandRun(interaction, command, context);
 			if (isOk(result)) return result;
 
 			error = result;
@@ -130,20 +115,10 @@ conditions.set(PreconditionRunCondition.Or, {
 		entries: IPreconditionContainer[],
 		context: PreconditionContext
 	) {
-		const results = await Promise.all(
-			entries.map((entry) => {
-				const slashCommandHandler = Reflect.get(entry, SlashCommandPreconditionRunFunction) as ISlashCommandPreconditionRunFunction | null;
-				return slashCommandHandler
-					? (Reflect.apply(slashCommandHandler, entry, [interaction, command, context]) as Result<unknown, UserError>)
-					: Promise.resolve(undefined);
-			})
-		);
+		const results = await Promise.all(entries.map((entry) => entry.slashCommandRun(interaction, command, context)));
 
 		let error: Err<UserError> | null = null;
 		for (const result of results) {
-			// Skip any preconditions without slash command handlers
-			if (result === undefined) continue;
-
 			if (isOk(result)) return result;
 
 			error = result;
@@ -161,6 +136,10 @@ declare module '@sapphire/framework' {
 	}
 
 	export interface PreconditionContainerSingle {
+		slashCommandRun(interaction: SlashCommandInteraction, command: Command, context?: PreconditionContext): Awaited<Result<unknown, UserError>>;
+	}
+
+	export interface IPreconditionContainer {
 		slashCommandRun(interaction: SlashCommandInteraction, command: Command, context?: PreconditionContext): Awaited<Result<unknown, UserError>>;
 	}
 

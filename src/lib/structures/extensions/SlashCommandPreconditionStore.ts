@@ -12,11 +12,15 @@ export class SlashCommandPreconditionStore extends getPreconditionStoreConstruct
 		for (const precondition of this['globalPreconditions'] as Precondition[]) {
 			const slashCommandHandler = Reflect.get(precondition, SlashCommandPreconditionRunFunction) as ISlashCommandPreconditionRunFunction | null;
 
-			if (slashCommandHandler) {
-				const result: Result<unknown, UserError> = await Reflect.apply(slashCommandHandler, precondition, [interaction, command, context]);
-
-				if (!result.success) return result;
+			if (!slashCommandHandler) {
+				throw new TypeError(
+					`The precondition "${precondition.name}" does not have a slash command handler! Did you forget to add one via the "SlashCommandPreconditionRunFunction" symbol?`
+				);
 			}
+
+			const result: Result<unknown, UserError> = await Reflect.apply(slashCommandHandler, precondition, [interaction, command, context]);
+
+			if (!result.success) return result;
 		}
 
 		return ok();
