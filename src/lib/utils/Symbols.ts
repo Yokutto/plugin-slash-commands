@@ -1,6 +1,6 @@
 import type { Awaited, Command, Precondition } from '@sapphire/framework';
 import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v8';
-import type { SlashCommandBuilder } from '../structures/SlashCommandBuilder';
+import type { SlashCommandBuilder } from '../structures/builders/SlashCommandBuilder';
 
 /**
  * Represents the function that is called when building a new slash command (or updates an existing one)
