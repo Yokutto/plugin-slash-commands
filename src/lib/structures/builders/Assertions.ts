@@ -31,6 +31,6 @@ export function validateMaxOptionsLength(options: ToJSON[]) {
 	ow(options, 'slash command options', ow.array.maxLength(25));
 }
 
-export function maxChoicesLength(choices: APIApplicationCommandOptionChoice[]) {
+export function validateMaxChoicesLength(choices: APIApplicationCommandOptionChoice[]) {
 	ow(choices, 'slash command choices', ow.array.maxLength(25));
 }

@@ -5,9 +5,10 @@ import { Shared__NameAndDescription, Shared__Options } from './SlashCommandOptio
 import { SlashCommandSubCommandBuilder, SlashCommandSubCommandGroupBuilder } from './SlashCommandSubCommands';
 
 export class SlashCommandBuilder {
-	@use(Shared__Options, Shared__NameAndDescription) protected this!: SlashCommandSubCommandBuilder;
-	protected name: string = null!;
-	protected description: string = null!;
+	@use(Shared__Options, Shared__NameAndDescription)
+	protected name: string = undefined!;
+
+	protected description: string = undefined!;
 	protected options: ToJSON[] = [];
 
 	/**
@@ -46,6 +47,9 @@ export class SlashCommandBuilder {
 		// Get the final result
 		const result = typeof input === 'function' ? input(new SlashCommandSubCommandGroupBuilder()) : input;
 
+		if (!(result instanceof SlashCommandSubCommandGroupBuilder))
+			throw new TypeError(`Expected to receive a sub command group builder, got "${typeof result}" instead`);
+
 		// Push it
 		options.push(result);
 
@@ -68,6 +72,9 @@ export class SlashCommandBuilder {
 
 		// Get the final result
 		const result = typeof input === 'function' ? input(new SlashCommandSubCommandBuilder()) : input;
+
+		if (!(result instanceof SlashCommandSubCommandBuilder))
+			throw new TypeError(`Expected to receive a sub command builder, got "${typeof result}" instead`);
 
 		// Push it
 		options.push(result);

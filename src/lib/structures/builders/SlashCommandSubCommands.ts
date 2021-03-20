@@ -48,9 +48,10 @@ export class SlashCommandSubCommandGroupBuilder extends Shared__NameAndDescripti
  * For more information, go to https://discord.com/developers/docs/interactions/slash-commands#subcommands-and-subcommand-groups
  */
 export class SlashCommandSubCommandBuilder implements ToJSON {
-	@use(Shared__Options, Shared__NameAndDescription) public this!: SlashCommandSubCommandBuilder;
-	protected name: string = null!;
-	protected description: string = null!;
+	@use(Shared__Options, Shared__NameAndDescription)
+	protected name: string = undefined!;
+
+	protected description: string = undefined!;
 	protected options: ToJSON[] = [];
 
 	public toJSON() {

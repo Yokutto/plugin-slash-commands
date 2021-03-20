@@ -1,6 +1,8 @@
 import type { Awaited, Command, Precondition } from '@sapphire/framework';
-import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v8';
+import type { APIInteraction, RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v8';
 import type { SlashCommandBuilder } from '../structures/builders/SlashCommandBuilder';
+import type { SlashCommandArgs } from '../structures/interactions/SlashCommandArgs';
+import type { SlashCommandContext, SlashCommandInteraction } from '../structures/interactions/SlashCommandInteraction';
 
 /**
  * Represents the function that is called when building a new slash command (or updates an existing one)
@@ -76,7 +78,31 @@ export interface ISlashCommandGuildOnlyFunction {
 	(): Awaited<string[]>;
 }
 
-// TODO: SlashCommandPreParse
+/**
+ * Represents the function that is called before a slash command gets ran, similar to Command#preParse
+ *
+ * @example
+ * ```typescript
+ * [SlashCommandPreParseFunction](interaction: SlashCommandInteraction, rawData: APIInteraction, context: SlashCommandContext) {
+ *    return new SlashCommandArgs(interaction, this, rawData, context);
+ * }
+ * ```
+ */
+export const SlashCommandPreParseFunction = Symbol('SlashCommand.PreParse');
+
+/**
+ * Represents the function that is called before a slash command gets ran, similar to Command#preParse
+ *
+ * @example
+ * ```typescript
+ * [SlashCommandPreParseFunction](interaction: SlashCommandInteraction, rawData: APIInteraction, context: SlashCommandContext) {
+ *    return new SlashCommandArgs(interaction, this, rawData, context);
+ * }
+ * ```
+ */
+export interface ISlashCommandPreParseFunction {
+	(interaction: SlashCommandInteraction, rawData: APIInteraction, context: SlashCommandContext): Awaited<SlashCommandArgs>;
+}
 
 /**
  * Represents the function that is called when a slash command interaction is received

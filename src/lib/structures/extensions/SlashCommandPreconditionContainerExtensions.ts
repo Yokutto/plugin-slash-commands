@@ -21,6 +21,7 @@ import {
 	UserError
 } from '@sapphire/framework';
 import { ISlashCommandPreconditionRunFunction, SlashCommandPreconditionRunFunction } from '../../utils/Symbols';
+import type { SlashCommandInteraction } from '../interactions/SlashCommandInteraction';
 
 // Extend `Command#preconditions` to have slash command support
 PreconditionContainerArray.prototype.slashCommandRun = function slashCommandRun(

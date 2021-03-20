@@ -9,4 +9,4 @@ export { SlashCommandOptionBase, SlashCommandIntegerOption, SlashCommandStringOp
 export * from './lib/structures/extensions/SlashCommandPreconditionStore';
 
 // Expose assertions
-export * as slashCommandAssertions from './lib/structures/builders/Assertions';
+export * as SlashCommandAssertions from './lib/structures/builders/Assertions';

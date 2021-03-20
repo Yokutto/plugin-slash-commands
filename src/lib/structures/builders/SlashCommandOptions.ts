@@ -1,6 +1,6 @@
 import { APIApplicationCommandOptionChoice, ApplicationCommandOptionType } from 'discord-api-types/v8';
 import ow from 'ow';
-import { validateDescription, validateMaxOptionsLength, validateName } from './Assertions';
+import { validateDescription, validateMaxChoicesLength, validateMaxOptionsLength, validateName } from './Assertions';
 import type { ToJSON } from './SlashCommandBuilder';
 
 // #region Mixins
@@ -53,6 +53,9 @@ export class Shared__Options {
 		// Get the final result
 		const result = typeof input === 'function' ? input(new SlashCommandStringOption(ApplicationCommandOptionType.STRING)) : input;
 
+		if (!(result instanceof SlashCommandStringOption))
+			throw new TypeError(`Expected to receive a string option builder, got "${typeof result}" instead`);
+
 		// Push it
 		options.push(result);
 
@@ -67,6 +70,9 @@ export class Shared__Options {
 
 		// Get the final result
 		const result = typeof input === 'function' ? input(new SlashCommandIntegerOption(ApplicationCommandOptionType.INTEGER)) : input;
+
+		if (!(result instanceof SlashCommandIntegerOption))
+			throw new TypeError(`Expected to receive an integer option builder, got "${typeof result}" instead`);
 
 		// Push it
 		options.push(result);
@@ -85,6 +91,8 @@ export class Shared__Options {
 
 		// Get the final result
 		const result = typeof input === 'function' ? input(new SlashCommandOptionBase(type)) : input;
+
+		if (!(result instanceof SlashCommandOptionBase)) throw new TypeError(`Expected to receive an option builder, got "${typeof result}" instead`);
 
 		// Push it
 		options.push(result);
@@ -141,7 +149,7 @@ export class SlashCommandOptionBase extends Shared__NameAndDescription implement
 	 */
 	public setRequired(required: boolean) {
 		// Assert that you actually passed a boolean
-		ow(required, 'command option - required', ow.boolean);
+		ow(required, 'required', ow.boolean);
 
 		this.required = required;
 
@@ -174,6 +182,8 @@ abstract class ApplicationCommandOptionWithChoicesBase<T extends string | number
 	public addChoice(name: string, value: T) {
 		if (typeof this.choices === 'undefined') this.choices = [];
 
+		validateMaxChoicesLength(this.choices);
+
 		// Validate name
 		ow(name, 'choice name', ow.string.minLength(1).maxLength(100));
 
@@ -182,6 +192,18 @@ abstract class ApplicationCommandOptionWithChoicesBase<T extends string | number
 		else ow(value, 'choice value', ow.number.finite);
 
 		this.choices.push({ name, value });
+
+		return this;
+	}
+
+	/**
+	 * Adds multiple choices for this option
+	 * @param choices The choices array
+	 */
+	public addChoices(choices: Record<string, T> | [name: string, value: T][]) {
+		const finalOptions = Array.isArray(choices) ? choices : Object.entries(choices);
+
+		for (const [name, value] of finalOptions) this.addChoice(name, value);
 
 		return this;
 	}
