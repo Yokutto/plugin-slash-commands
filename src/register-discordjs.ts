@@ -3,7 +3,7 @@ import './lib/structures/extensions/SlashCommandPreconditionContainerExtensions'
 
 import { Plugin, postInitialization, SapphireClient } from '@sapphire/framework';
 import { join } from 'path';
-import { SlashCommandPreconditionStore } from './index';
+import { extendPreconditionStore } from './index';
 
 /**
  * @since 1.0.0
@@ -15,7 +15,7 @@ export class SlashCommandPlugin extends Plugin {
 
 		// Extend the precondition store, to get slash command support
 		const originalPreconditionStore = this.stores.get('preconditions');
-		const extendedStore = new SlashCommandPreconditionStore();
+		const extendedStore = extendPreconditionStore(originalPreconditionStore);
 
 		for (const path of originalPreconditionStore.paths) extendedStore.registerPath(path);
 

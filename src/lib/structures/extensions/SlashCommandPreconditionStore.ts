@@ -1,30 +1,33 @@
 import { AsyncPreconditionResult, Command, ok, Precondition, PreconditionContext, PreconditionStore, Result, UserError } from '@sapphire/framework';
-import { Store } from '@sapphire/pieces';
 import { ISlashCommandPreconditionRunFunction, SlashCommandPreconditionRunFunction } from '../../utils/Symbols';
+import type { SlashCommandInteraction } from '../interactions/SlashCommandInteraction';
 
-function getPreconditionStoreConstructor() {
-	const originalStore = Store.injectedContext.stores.get('preconditions');
-	return originalStore.constructor as typeof PreconditionStore;
-}
+export function extendPreconditionStore(store: PreconditionStore) {
+	const originalConstructor = store.constructor as typeof PreconditionStore;
 
-export class SlashCommandPreconditionStore extends getPreconditionStoreConstructor() {
-	public async slashCommandRun(interaction: SlashCommandInteraction, command: Command, context: PreconditionContext = {}) {
-		for (const precondition of this['globalPreconditions'] as Precondition[]) {
-			const slashCommandHandler = Reflect.get(precondition, SlashCommandPreconditionRunFunction) as ISlashCommandPreconditionRunFunction | null;
+	class SlashCommandPreconditionStore extends originalConstructor {
+		public async slashCommandRun(interaction: SlashCommandInteraction, command: Command, context: PreconditionContext = {}) {
+			for (const precondition of this['globalPreconditions'] as Precondition[]) {
+				const slashCommandHandler = Reflect.get(precondition, SlashCommandPreconditionRunFunction) as
+					| ISlashCommandPreconditionRunFunction
+					| undefined;
 
-			if (!slashCommandHandler) {
-				throw new TypeError(
-					`The precondition "${precondition.name}" does not have a slash command handler! Did you forget to add one via the "SlashCommandPreconditionRunFunction" symbol?`
-				);
+				if (!slashCommandHandler) {
+					throw new TypeError(
+						`The precondition "${precondition.name}" does not have a slash command handler! Did you forget to add one via the "SlashCommandPreconditionRunFunction" symbol?`
+					);
+				}
+
+				const result: Result<unknown, UserError> = await Reflect.apply(slashCommandHandler, precondition, [interaction, command, context]);
+
+				if (!result.success) return result;
 			}
 
-			const result: Result<unknown, UserError> = await Reflect.apply(slashCommandHandler, precondition, [interaction, command, context]);
-
-			if (!result.success) return result;
+			return ok();
 		}
-
-		return ok();
 	}
+
+	return new SlashCommandPreconditionStore() as PreconditionStore;
 }
 
 declare module '@sapphire/framework' {

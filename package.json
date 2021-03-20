@@ -25,7 +25,7 @@
 		"cz": "git-cz",
 		"docs": "typedoc",
 		"esm:default": "gen-esm-wrapper dist/index.js dist/index.mjs",
-		"esm:register": "gen-esm-wrapper dist/register.js dist/register.mjs",
+		"esm:register": "gen-esm-wrapper dist/register-discordjs.js dist/register-discordjs.mjs",
 		"format": "prettier --write {src,tests}/**/*.ts",
 		"lint": "eslint src tests --ext ts --fix",
 		"postbuild": "run-p esm:*",
