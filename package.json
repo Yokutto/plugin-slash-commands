@@ -29,7 +29,6 @@
 		"format": "prettier --write {src,tests}/**/*.ts",
 		"lint": "eslint src tests --ext ts --fix",
 		"postbuild": "run-p esm:*",
-		"postinstall": "husky install .github/husky",
 		"postpublish": "pinst --enable",
 		"prepublishOnly": "yarn build && pinst --disable",
 		"sversion": "standard-version",
